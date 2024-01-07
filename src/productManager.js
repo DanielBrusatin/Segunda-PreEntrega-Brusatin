@@ -12,10 +12,20 @@ class ProductManager {
       return JSON.parse(res)
     }
     catch (error){
-      return error.code
+      return error
     }
   }
-
+  
+    getProducts =  () => {
+      const response = this.readFile()
+      return response
+    }
+  
+    getProductById = (id) => {
+      const response = this.readFile()
+      return response.find(product => product.id == id) ?? `No existe el producto con ID = ${id}`
+    }
+  
   addProduct = async (title, description, price, thumbnail, code, stock) => {
     if (title && description && price && thumbnail && code && stock) {  //Chequeo que esten todos los campos
       if(!this.products.some(product => product.code == code)) {  //Verifico que no se repita el codigo
@@ -35,16 +45,6 @@ class ProductManager {
         console.log(`Producto con codigo ${code} existente`)
       }
     } else {console.log('Falta un campo')}
-  }
-
-  getProducts =  () => {
-    const response = this.readFile()
-    return response
-  }
-
-  getProductById = (id) => {
-    const response = this.readFile()
-    return response.find(product => product.id == id) ?? `No existe el producto con ID = ${id}`
   }
 
   updateProduct = async ({id, ...product}) => {
@@ -70,4 +70,5 @@ class ProductManager {
   }
 }
 
-module.exports = new ProductManager('catalogo.txt')
+module.exports = new ProductManager('catalogo.json')
+
