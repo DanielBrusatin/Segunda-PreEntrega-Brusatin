@@ -11,20 +11,29 @@ class ProductManager {
       const res =  fs.readFileSync(this.path, 'utf-8')
       return JSON.parse(res)
     }
-    catch (error){
-      return error
+    catch {
+      throw new Error('404', {cause: `Can't find the file '${this.path}'`})
     }
   }
   
-    getProducts =  () => {
+  getProducts = () => {
+    const response = this.readFile()
+    return response
+  }
+
+  getProductById = (id) => {
+    if (Number.isInteger(Number(id)) && Number(id) >= 0) {
       const response = this.readFile()
-      return response
+      if (response.find(product => product.id == id)) {
+        return response.find(product => product.id == id)  
+      } else {
+        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+      }
     }
-  
-    getProductById = (id) => {
-      const response = this.readFile()
-      return response.find(product => product.id == id) ?? `No existe el producto con ID = ${id}`
+    else {
+      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor o igual a 0.`})
     }
+  }
   
   addProduct = async (title, description, price, thumbnail, code, stock) => {
     if (title && description && price && thumbnail && code && stock) {  //Chequeo que esten todos los campos
