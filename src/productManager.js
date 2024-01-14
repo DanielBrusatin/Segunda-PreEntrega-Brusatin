@@ -22,15 +22,16 @@ class ProductManager {
   }
 
   getProductById = (id) => {
+    //Verifico que se haya pasado un ID válido
     if (Number.isInteger(Number(id)) && Number(id) > 0) {
       const response = this.readFile()
+      //Compruebo que exista el producto con ese ID
       if (response.find(product => product.id == id)) {
         return response.find(product => product.id == id)  
       } else {
         throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
       }
-    }
-    else {
+    } else {
       throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
     }
   }
@@ -55,20 +56,38 @@ class ProductManager {
     if(!this.products.some(product => product.code == code)) {
       this.id++
       this.products.push({...newProduct, thumbnails, id: this.id})
-      await fs.promises.writeFile(this.path, JSON.stringify(this.products))
+      try {
+        await fs.promises.writeFile(this.path, JSON.stringify(this.products))
+      } catch {
+        throw new Error('500', {cause: 'No se pudo agregar el producto, intentar nuevamente.'})
+      }
     } else {
       throw new Error('400', {cause: `Ya existe un producto con el código ${code}`})
     }
   }
 
-  updateProduct = async ({id, ...product}) => {
-    if(await this.deleteProduct(id)) {
-      const oldProducts = await this.readFile()
-      const newProducts = [
-        ...oldProducts,
-        {...product, id}
-      ]
-      await fs.promises.writeFile(this.path, JSON.stringify(newProducts))
+  updateProduct = async (id, newProduct) => {
+    //Verifico que se haya pasado un ID válido
+    if (Number.isInteger(Number(id)) && Number(id) > 0) {
+      const index = this.products.findIndex( product => product.id == id)
+      //Compruebo que exista el producto con ese ID
+      if (index !== -1) {
+        //Actualizo las keys pasadas en "newProduct" que tenga el producto excepto el ID
+        for (const key in newProduct) {
+          if (this.products[index].hasOwnProperty(key) && key != 'id') {
+            this.products[index][key] = newProduct[key];
+          }
+        }
+        try {
+          await fs.promises.writeFile(this.path, JSON.stringify(this.products))
+        } catch {
+          throw new Error('500', {cause: 'No se pudo agregar el producto, intentar nuevamente.'})
+        }
+      } else {
+        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+      }
+    } else {
+      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
     }
   }
 

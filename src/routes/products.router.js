@@ -11,10 +11,10 @@ router.get('/', (req, res) => {
     } else if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
       res.status(200).send({status: 'success', payload: products.slice(0, limit)})
     } else {
-      res.status(400).send({ status: 400, error: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
+      res.status(400).send({ status: 'error 400', error: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
     }
   } catch (error) {
-    res.status(404).send({ status: 404, error: error.cause })
+    res.status(404).send({ status: 'error 404', error: error.cause })
   }
 })
 
@@ -22,17 +22,27 @@ router.get('/:pid', (req, res) => {
   try {
     res.send(productManager.getProductById(req.params.pid))
   } catch (error) {
-    res.status(error.message).send({ status: error.message, error: error.cause })
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
   }
 })
 
 router.post('/', async(req, res) => {
   try {
     await productManager.addProduct(req.body)
-    res.status(201).send({status: 'success', message: 'Producto agregado'})
+    res.status(201).send({status: 'success', message: 'Producto agregado correctamente'})
   } catch (error) {
-    res.status(error.message).send({ status: error.message, error: error.cause })
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
   }
+})
+
+router.put('/:pid', async(req, res) => {
+  try {
+    await productManager.updateProduct(req.params.pid, req.body)
+    res.status(200).send({status: 'success', message: 'Producto actualizado correctamente'})
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+
 })
 
 module.exports = router
