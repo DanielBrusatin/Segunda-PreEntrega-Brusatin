@@ -1,9 +1,9 @@
 const fs = require('fs')
 class ProductManager {
   constructor(path) {
-    this. products = []
-    this.id = 0
     this.path = path
+    this.products = this.getProducts()
+    this.id = this.products.reduce((idMax, product) => idMax > product.id ? idMax : product.id, 0)
   }
 
   readFile = () => {
@@ -22,7 +22,7 @@ class ProductManager {
   }
 
   getProductById = (id) => {
-    if (Number.isInteger(Number(id)) && Number(id) >= 0) {
+    if (Number.isInteger(Number(id)) && Number(id) > 0) {
       const response = this.readFile()
       if (response.find(product => product.id == id)) {
         return response.find(product => product.id == id)  
@@ -31,24 +31,26 @@ class ProductManager {
       }
     }
     else {
-      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor o igual a 0.`})
+      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
     }
   }
   
-  addProduct = async (title, description, price, thumbnail, code, stock) => {
-    if (title && description && price && thumbnail && code && stock) {  //Chequeo que esten todos los campos
+  addProduct = async ({title, description, code, price, status, stock, category, thumbnail}) => {
+    if (title && description && code && price && status && stock && category) {  //Chequeo que esten todos los campos
       if(!this.products.some(product => product.code == code)) {  //Verifico que no se repita el codigo
+        this.id++
         const product = {
           title,
           description,
-          price,
-          thumbnail,
           code,
+          price,
+          status,
           stock,
+          category,
+          thumbnail,
           id: this.id
         }
         this.products.push(product)
-        this.id++
         await fs.promises.writeFile(this.path, JSON.stringify(this.products))
       } else {
         console.log(`Producto con codigo ${code} existente`)
