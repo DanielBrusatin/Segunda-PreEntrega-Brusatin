@@ -35,27 +35,30 @@ class ProductManager {
     }
   }
   
-  addProduct = async ({title, description, code, price, status, stock, category, thumbnail}) => {
-    if (title && description && code && price && status && stock && category) {  //Chequeo que esten todos los campos
-      if(!this.products.some(product => product.code == code)) {  //Verifico que no se repita el codigo
-        this.id++
-        const product = {
-          title,
-          description,
-          code,
-          price,
-          status,
-          stock,
-          category,
-          thumbnail,
-          id: this.id
-        }
-        this.products.push(product)
-        await fs.promises.writeFile(this.path, JSON.stringify(this.products))
-      } else {
-        console.log(`Producto con codigo ${code} existente`)
-      }
-    } else {console.log('Falta un campo')}
+  addProduct = async ({title, description, code, price, status, stock, category, thumbnails}) => {
+    const newProduct = {
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+    }
+    //Verifico que estén todos los campos y lanzo un error si falta alguno
+    const missingFields = []
+    Object.entries(newProduct).forEach(([key, value]) => !value && missingFields.push(key))
+    if(missingFields.length) {
+      throw new Error('400', {cause: `Falta/n el/los campo/s ${missingFields.join(', ')}`})
+    }
+    //Verifico que no se repita el codigo de producto
+    if(!this.products.some(product => product.code == code)) {
+      this.id++
+      this.products.push({...newProduct, thumbnails, id: this.id})
+      await fs.promises.writeFile(this.path, JSON.stringify(this.products))
+    } else {
+      throw new Error('400', {cause: `Ya existe un producto con el código ${code}`})
+    }
   }
 
   updateProduct = async ({id, ...product}) => {

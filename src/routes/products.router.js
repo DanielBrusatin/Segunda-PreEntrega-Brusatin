@@ -26,9 +26,9 @@ router.get('/:pid', (req, res) => {
   }
 })
 
-router.post('/', (req, res) => {
+router.post('/', async(req, res) => {
   try {
-    productManager.addProduct(req.body)
+    await productManager.addProduct(req.body)
     res.status(201).send({status: 'success', message: 'Producto agregado'})
   } catch (error) {
     res.status(error.message).send({ status: error.message, error: error.cause })
