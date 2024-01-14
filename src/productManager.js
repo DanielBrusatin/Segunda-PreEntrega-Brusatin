@@ -79,5 +79,5 @@ class ProductManager {
   }
 }
 
-module.exports = new ProductManager('catalogo.json')
+module.exports = new ProductManager('products.json')
 
