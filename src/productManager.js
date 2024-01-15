@@ -92,14 +92,22 @@ class ProductManager {
   }
 
   deleteProduct = async (id) => {
-    const response = await this.readFile()
-    if (!response.find(product => product.id == id)) {
-      console.log(`Producto con ID:"${id}" no encontrado`)
-      return false
+    //Verifico que se haya pasado un ID válido
+    if (Number.isInteger(Number(id)) && Number(id) > 0) {
+      //Compruebo que exista el producto con ese ID
+      if (this.products.find(product => product.id == id)) {
+        this.products = this.products.filter(product => product.id != id)
+        try {
+          await fs.promises.writeFile(this.path, JSON.stringify(this.products))
+        } catch {
+          throw new Error('500', {cause: 'No se pudo eliminar el producto, intentar nuevamente.'})
+        }
+      } else {
+        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+      }
+    } else {
+      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
     }
-    const newList = response.filter(product => product.id != id)
-    await fs.promises.writeFile(this.path, JSON.stringify(newList))
-    return true
   }
 }
 
