@@ -1,5 +1,6 @@
 const fs = require('fs')
 const { id } = require('./productManager')
+const productManager = require('./productManager')
 class cartManager {
   constructor(path) {
     this.path = path
@@ -37,7 +38,7 @@ class cartManager {
     //Verifico que se haya pasado un ID válido
     if (Number.isInteger(Number(id)) && Number(id) > 0) {
       const response = this.readFile()
-      //Compruebo que exista el carto con ese ID
+      //Compruebo que exista el carrito con ese ID
       if (response.find(cart => cart.id == id)) {
         return response.find(cart => cart.id == id).products
       } else {
@@ -46,6 +47,42 @@ class cartManager {
     } else {
       throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
     }
+  }
+
+  addProductToCart = async({cid, pid}) => {
+        //Verifico que se haya pasado un CID válido
+        if (Number.isInteger(Number(cid)) && Number(cid) > 0) {
+          //Compruebo que exista el carrito con ese CID
+          const cartIndex = this.carts.findIndex( cart => cart.id == cid )
+          if (cartIndex !== -1) {
+            //Compruebo que el PID sea valido y que exista el producto con ese PID
+            try {
+              productManager.getProductById(pid)
+            } catch (error) {
+              throw new Error(error.message, { cause: error.cause})
+            }
+            //Compruebo si ya existe el producto en el carrito para agregarlo o sumarle uno a la cantidad
+            const productsInCart = this.carts[cartIndex].products
+            const productIndex = productsInCart.findIndex( cartItem => cartItem.productId == pid)
+            if (productIndex !== -1) {
+              productsInCart[productIndex].quantity++
+            } else {
+              const newProduct = {productId: pid, quantity: 1}
+              productsInCart.push(newProduct)
+            }
+            //Guardo las modificaciones en el archivo
+            try {
+              await fs.promises.writeFile(this.path, JSON.stringify(this.carts))
+            } catch {
+              throw new Error('500', {cause: 'No se pudo crear el carrito, intentar nuevamente.'})
+            }
+          } else {
+            throw new Error('404', { cause: `No existe el carrito con ID = ${cid}` })
+          }
+        } else {
+          throw new Error('400', { cause: `Ingresaste el ID de carrito '${cid}' que es inválido. El ID debe ser un numero entero mayor 0.` })
+        }
+    
   }
 
 

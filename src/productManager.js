@@ -32,7 +32,7 @@ class ProductManager {
         throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
       }
     } else {
-      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
+      throw new Error('400', {cause: `Ingresaste el ID de producto '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
     }
   }
   

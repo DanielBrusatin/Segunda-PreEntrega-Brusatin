@@ -19,4 +19,13 @@ router.get('/:cid', (req, res) => {
   }
 })
 
+router.post('/:cid/products/:pid', async(req, res) => {
+  try {
+    await cartManager.addProductToCart(req.params)
+    res.status(201).send({ status: 'success', message: 'Producto agregado al carrito correctamente' })
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+})
+
 module.exports = router
