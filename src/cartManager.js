@@ -27,7 +27,7 @@ class cartManager {
       throw new Error('500', {cause: 'No se pudo crear el carrito, intentar nuevamente.'})
     }
   }
-  
+
   //   getcarts = () => {
   //     const response = this.readFile()
   //     return response
@@ -39,7 +39,7 @@ class cartManager {
       const response = this.readFile()
       //Compruebo que exista el carto con ese ID
       if (response.find(cart => cart.id == id)) {
-        return response.find(cart => cart.id == id)
+        return response.find(cart => cart.id == id).products
       } else {
         throw new Error('404', { cause: `No existe el carrito con ID = ${id}` })
       }
