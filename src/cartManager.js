@@ -1,5 +1,4 @@
 const fs = require('fs')
-const { id } = require('./productManager')
 const productManager = require('./productManager')
 class cartManager {
   constructor(path) {
@@ -35,7 +34,14 @@ class cartManager {
       const response = this.readFile()
       //Compruebo que exista el carrito con ese ID
       if (response.find( cart => cart.id == id )) {
-        return response.find( cart => cart.id == id ).products
+        const productsInCart = response.find( cart => cart.id == id ).products
+        const products = []
+        productsInCart.forEach( productInCart => {
+          //Busco el producto con el product manager, traigo todas sus propiedades y le agrego la propiedad quantity
+          const product = { ...productManager.getProductById(productInCart.productId), quantity: productInCart.quantity }
+          products.push(product)
+        });
+        return products
       } else {
         throw new Error('404', { cause: `No existe el carrito con ID = ${id}` })
       }
