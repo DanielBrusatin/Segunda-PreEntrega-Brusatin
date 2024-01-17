@@ -12,7 +12,7 @@ class ProductManager {
       return JSON.parse(res)
     }
     catch {
-      throw new Error('404', {cause: `Can't find the file '${this.path}'`})
+      throw new Error('404', { cause: `Can't find the file '${this.path}'` })
     }
   }
   
@@ -26,17 +26,17 @@ class ProductManager {
     if (Number.isInteger(Number(id)) && Number(id) > 0) {
       const response = this.readFile()
       //Compruebo que exista el producto con ese ID
-      if (response.find(product => product.id == id)) {
-        return response.find(product => product.id == id)  
+      if (response.find( product => product.id == id )) {
+        return response.find( product => product.id == id )  
       } else {
-        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
       }
     } else {
-      throw new Error('400', {cause: `Ingresaste el ID de producto '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
+      throw new Error('400', { cause: `Ingresaste el ID de producto '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
     }
   }
   
-  addProduct = async ({title, description, code, price, status, stock, category, thumbnails}) => {
+  addProduct = async ({ title, description, code, price, status, stock, category, thumbnails }) => {
     const newProduct = {
       title,
       description,
@@ -48,21 +48,21 @@ class ProductManager {
     }
     //Verifico que estén todos los campos y lanzo un error si falta alguno
     const missingFields = []
-    Object.entries(newProduct).forEach(([key, value]) => !value && missingFields.push(key))
+    Object.entries(newProduct).forEach( ([key, value]) => !value && missingFields.push(key))
     if(missingFields.length) {
-      throw new Error('400', {cause: `Falta/n el/los campo/s ${missingFields.join(', ')}`})
+      throw new Error('400', { cause: `Falta/n el/los campo/s ${missingFields.join(', ')}` })
     }
     //Verifico que no se repita el codigo de producto
-    if(!this.products.some(product => product.code == code)) {
+    if(!this.products.some( product => product.code == code )) {
       this.id++
-      this.products.push({...newProduct, thumbnails, id: this.id})
+      this.products.push({ ...newProduct, thumbnails, id: this.id })
       try {
         await fs.promises.writeFile(this.path, JSON.stringify(this.products))
       } catch {
-        throw new Error('500', {cause: 'No se pudo agregar el producto, intentar nuevamente.'})
+        throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
       }
     } else {
-      throw new Error('400', {cause: `Ya existe un producto con el código ${code}`})
+      throw new Error('400', { cause: `Ya existe un producto con el código ${code}` })
     }
   }
 
@@ -81,13 +81,13 @@ class ProductManager {
         try {
           await fs.promises.writeFile(this.path, JSON.stringify(this.products))
         } catch {
-          throw new Error('500', {cause: 'No se pudo agregar el producto, intentar nuevamente.'})
+          throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
         }
       } else {
-        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
       }
     } else {
-      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
+      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
     }
   }
 
@@ -95,18 +95,18 @@ class ProductManager {
     //Verifico que se haya pasado un ID válido
     if (Number.isInteger(Number(id)) && Number(id) > 0) {
       //Compruebo que exista el producto con ese ID
-      if (this.products.find(product => product.id == id)) {
-        this.products = this.products.filter(product => product.id != id)
+      if (this.products.find( product => product.id == id)) {
+        this.products = this.products.filter( product => product.id != id)
         try {
           await fs.promises.writeFile(this.path, JSON.stringify(this.products))
         } catch {
-          throw new Error('500', {cause: 'No se pudo eliminar el producto, intentar nuevamente.'})
+          throw new Error('500', { cause: 'No se pudo eliminar el producto, intentar nuevamente.' })
         }
       } else {
-        throw new Error('404', {cause: `No existe el producto con ID = ${id}`})
+        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
       }
     } else {
-      throw new Error('400', {cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.`})
+      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
     }
   }
 }
