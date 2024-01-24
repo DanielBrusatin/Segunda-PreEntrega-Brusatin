@@ -34,18 +34,18 @@ app.use('/', viewsRouter)
 socketServer.on('connection', socket => {
   console.log('nuevo cliente conectado')
   //Escucho evento para agregar producto 
-  socket.on('nuevo_producto', async producto => {
+  socket.on('add_product', async producto => {
     try {
       //Si se agrega el producto se envía evento de confirmación
       await productManager.addProduct(producto)
       socket.emit('success')
       //Envío evento a todos los sockets para actualizar la vista de productos
-      socketServer.emit('productos', productManager.getProducts())
+      socketServer.emit('products', productManager.getProducts())
     } catch {
       //Si hay un fallo al agregar el producto se envía evento de error 
       socket.emit('error')
     }
   })
   //Envio evento para renderizar la lista de productos a la nueva conexion
-  socket.emit('productos', productManager.getProducts())
+  socket.emit('products', productManager.getProducts())
 })

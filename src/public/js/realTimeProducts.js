@@ -1,28 +1,26 @@
 const socket = io()
 const products = [{ stock: 0 }, { stock: 1 }]
-const form = document.getElementById('agregarProducto')
+const form = document.getElementById('addProduct')
 const catalogue = document.getElementById('catalogue')
 
 //Capturo campos del formulario, envío evento para agregar producto y borro contenido de los campos del formulario
 form.addEventListener('submit', ev => {
   ev.preventDefault()
-  const title = document.getElementById('title').value
-  const description = document.getElementById('description').value
-  const code = document.getElementById('code').value
-  const price = document.getElementById('price').value
-  const status = document.getElementById('status').value
-  const stock = document.getElementById('stock').value
-  const category = document.getElementById('category').value
-  const newProduct = { title, description, code, price, status, stock, category }
-  socket.emit('nuevo_producto', newProduct)
-  for (var i = 0; i < form.elements.length; i++) {
-    const elemento = form.elements[i]
-    elemento.value = ''
+  const newProduct = {
+    title: ev.target.title.value,
+    description: ev.target.description.value,
+    code: ev.target.code.value,
+    price: ev.target.price.value,
+    status: ev.target.status.value,
+    stock: ev.target.stock.value,
+    category: ev.target.category.value 
   }
+  socket.emit('add_product', newProduct)
+  form.reset()
 })
 
 //Escucho evento para renderizar lista de productos
-socket.on('productos', products => {
+socket.on('products', products => {
   while (catalogue.firstChild) {
     catalogue.removeChild(catalogue.firstChild)
   }
