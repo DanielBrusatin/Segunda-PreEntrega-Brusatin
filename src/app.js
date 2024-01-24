@@ -7,6 +7,7 @@ import viewsRouter from './routes/views.router.js'
 import { Server } from 'socket.io'
 import productManager from './productManager.js'
 
+//Inicializo app y creo los servidores http y socket
 const app = express()
 const port = 8080
 const httpServer = app.listen(port, () => {
@@ -21,17 +22,30 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
+//Indico ruta para archivos estáticos
 app.use(express.static(__dirname + '/public'))
 
+//Rutas para los diferentes router
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/', viewsRouter)
 
+//Escucho evento de nueva conexión
 socketServer.on('connection', socket => {
   console.log('nuevo cliente conectado')
+  //Escucho evento para agregar producto 
   socket.on('nuevo_producto', async producto => {
-    await productManager.addProduct(producto)
-    socketServer.emit('productos', productManager.getProducts())
+    try {
+      //Si se agrega el producto se envía evento de confirmación
+      await productManager.addProduct(producto)
+      socket.emit('success')
+      //Envío evento a todos los sockets para actualizar la vista de productos
+      socketServer.emit('productos', productManager.getProducts())
+    } catch {
+      //Si hay un fallo al agregar el producto se envía evento de error 
+      socket.emit('error')
+    }
   })
+  //Envio evento para renderizar la lista de productos a la nueva conexion
   socket.emit('productos', productManager.getProducts())
 })

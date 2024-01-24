@@ -3,6 +3,7 @@ const products = [{ stock: 0 }, { stock: 1 }]
 const form = document.getElementById('agregarProducto')
 const catalogue = document.getElementById('catalogue')
 
+//Capturo campos del formulario, envío evento para agregar producto y borro contenido de los campos del formulario
 form.addEventListener('submit', ev => {
   ev.preventDefault()
   const title = document.getElementById('title').value
@@ -20,6 +21,7 @@ form.addEventListener('submit', ev => {
   }
 })
 
+//Escucho evento para renderizar lista de productos
 socket.on('productos', products => {
   while (catalogue.firstChild) {
     catalogue.removeChild(catalogue.firstChild)
@@ -36,4 +38,22 @@ socket.on('productos', products => {
   </div>`
     catalogue.innerHTML += content
   })
+})
+
+//Escucho evento de confirmacion de producto agregado
+socket.on('success', () => {
+  Swal.fire({
+    title: "Agregado!",
+    text: "Se agrego correctamente el producto",
+    icon: 'success'
+  });
+})
+
+//Escucho evento de error al agregar producto
+socket.on('error', () => {
+  Swal.fire({
+    title: 'Ups!',
+    text: "Ya existe un producto con ese código",
+    icon: 'error'
+  });
 })
