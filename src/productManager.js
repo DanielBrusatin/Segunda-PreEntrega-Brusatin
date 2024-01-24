@@ -1,7 +1,8 @@
-const fs = require('fs')
+import fs from 'fs'
+import __dirname from "./utils.js"
 class ProductManager {
   constructor(path) {
-    this.path = path
+    this.path = __dirname + path
     this.products = this.getProducts()
     this.id = this.products.reduce((idMax, product) => idMax > product.id ? idMax : product.id, 0)
   }
@@ -111,5 +112,5 @@ class ProductManager {
   }
 }
 
-module.exports = new ProductManager('products.json')
+export default new ProductManager('/products.json')
 

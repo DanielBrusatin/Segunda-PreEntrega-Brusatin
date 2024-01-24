@@ -15,4 +15,5 @@
     * Metodo POST en '/' : Crea un nuevo carrito con ID único y con un array vacío de productos.
     * Metodo GET en '/:cid' : Muestra los productos de un carrito verificando que exista un carrito con ese ID. Si bien el carrito solo guarda el ID de los productos, se muestran todas las propiedades del producto mas la cantidad del mismo.
     * Metodo POST en '/:cid/product/:pid' : Agrega un producto a un carrito verificando que existan ambos ID, si el producto ya esta en el carrito se le suma 1 a la cantidad.
+* - [ ] Desafío 4: Integración al servidor de vistas usando handlebars y sockets con websockets.
 

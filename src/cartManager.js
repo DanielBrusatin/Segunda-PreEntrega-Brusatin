@@ -1,8 +1,9 @@
-const fs = require('fs')
-const productManager = require('./productManager')
+import fs from 'fs'
+import productManager from './productManager.js'
+import __dirname from "./utils.js"
 class cartManager {
   constructor(path) {
-    this.path = path
+    this.path = __dirname + path
     this.carts = this.readFile()
     this.id = this.carts.reduce((idMax, cart) => idMax > cart.id ? idMax : cart.id, 0)
   }
@@ -86,5 +87,5 @@ class cartManager {
   }
 }
 
-module.exports = new cartManager('carts.json')
+export default new cartManager('/carts.json')
 
