@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const productsCollection = 'products'
 
 const productSchema = new mongoose.Schema({
-  id: Number,
   title: String,
   description: String,
   code: {
@@ -20,4 +19,4 @@ const productSchema = new mongoose.Schema({
   thumbnails: [String]
 })
 
-export const productModel = mongoose.model(productsCollection, productSchema)
+export default mongoose.model(productsCollection, productSchema)

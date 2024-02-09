@@ -1,12 +1,12 @@
-import {userModel} from './models/user.model.js'
+import Users from './models/user.model.js'
 
 class UsersDao {
   static async getAll () {
-    return userModel.find().lean()
+    return Users.find().lean()
   }
 
   static async add (user) {
-    return new userModel(user).save()
+    return new Users(user).save()
   }
 }
 
