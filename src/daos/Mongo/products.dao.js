@@ -18,10 +18,9 @@ class ProductsDao {
         throw new Error('500', { cause: 'Error al leer base de datos' })
       }
     } else {
-      throw new Error ('400', { cause: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
+      throw new Error('400', { cause: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
     }
   }
-
 
   static async getProductById(id) {
     // Compruebo que el ID sea válido (El ID de mongo tiene siempre 24 caracteres)
@@ -37,56 +36,40 @@ class ProductsDao {
     }
   }
 
+  static async addProduct({ title, description, code, price, status, stock, category, thumbnails }) {
+    const newProduct = {
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+    }
+    //Verifico que estén todos los campos obligatorios y lanzo un error si falta alguno
+    const missingFields = []
+    Object.entries(newProduct).forEach(([key, value]) => !value && missingFields.push(key))
+    if (missingFields.length) {
+      throw new Error('400', { cause: `Falta/n el/los campo/s ${missingFields.join(', ')}` })
+    }
+    //Verifico que no se repita el codigo de producto
+    if (await Products.findOne({code: code})) {
+      throw new Error('400', { cause: `Ya existe un producto con el código ${code}` })
+    } else {
+      try {
+        await new Products({...newProduct, thumbnails}).save()
+      } catch (error){
+        throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
+      }
+    }
+  }
 
 
 }
 
 export default ProductsDao
 
-// getProductById = (id) => {
-//   //Verifico que se haya pasado un ID válido
-//   if (Number.isInteger(Number(id)) && Number(id) > 0) {
-//     const response = this.readFile()
-//     //Compruebo que exista el producto con ese ID
-//     if (response.find(product => product.id == id)) {
-//       return response.find(product => product.id == id)
-//     } else {
-//       throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
-//     }
-//   } else {
-//     throw new Error('400', { cause: `Ingresaste el ID de producto '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
-//   }
-// }
 
-// addProduct = async ({ title, description, code, price, status, stock, category, thumbnails }) => {
-//   const newProduct = {
-//     title,
-//     description,
-//     code,
-//     price,
-//     status,
-//     stock,
-//     category,
-//   }
-//   //Verifico que estén todos los campos y lanzo un error si falta alguno
-//   const missingFields = []
-//   Object.entries(newProduct).forEach(([key, value]) => !value && missingFields.push(key))
-//   if (missingFields.length) {
-//     throw new Error('400', { cause: `Falta/n el/los campo/s ${missingFields.join(', ')}` })
-//   }
-//   //Verifico que no se repita el codigo de producto
-//   if (!this.products.some(product => product.code == code)) {
-//     this.id++
-//     this.products.push({ ...newProduct, thumbnails, id: this.id })
-//     try {
-//       await fs.promises.writeFile(this.path, JSON.stringify(this.products))
-//     } catch {
-//       throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
-//     }
-//   } else {
-//     throw new Error('400', { cause: `Ya existe un producto con el código ${code}` })
-//   }
-// }
 
 // updateProduct = async (id, newProduct) => {
 //   //Verifico que se haya pasado un ID válido

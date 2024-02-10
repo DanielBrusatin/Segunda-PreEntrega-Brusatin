@@ -3,7 +3,7 @@ import productManager from '../daos/fileSystem/productManager.js'
 import ProductsDao from '../daos/Mongo/products.dao.js'
 const router = express.Router()
 
-router.get('/', async (req, res) => {
+router.get('/', async(req, res) => {
   try {
     const { limit } = req.query
     if (!limit) {
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/:pid', async (req, res) => {
+router.get('/:pid', async(req, res) => {
   try {
     const product = await ProductsDao.getProductById(req.params.pid)
     res.status(200).send({ status: 'success', payload: product })
@@ -29,7 +29,7 @@ router.get('/:pid', async (req, res) => {
 
 router.post('/', async(req, res) => {
   try {
-    await productManager.addProduct(req.body)
+    await ProductsDao.addProduct(req.body)
     res.status(201).send({ status: 'success', message: 'Producto agregado correctamente' })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
