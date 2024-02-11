@@ -1,4 +1,4 @@
-import Carts from './models/cart.model.js'
+import Carts from '../models/cart.model.js'
 import ProductsDao from "./products.dao.js";
 
 class CartsDao {
@@ -47,15 +47,14 @@ class CartsDao {
     if (productIndex !== -1) {
       try {
         await Carts.findByIdAndUpdate(cid, {$inc: {'products.$[elem].quantity': 1}}, { arrayFilters: [{ 'elem._id': pid }] })
-      } catch (error){
-        console.log(error);
-        throw new Error('500', { cause: 'Error al leer base de datosA' })
+      } catch {
+        throw new Error('500', { cause: 'Error al leer base de datos' })
       }
     } else {
       try {
         await Carts.findByIdAndUpdate(cid, {$push: {'products': { _id: pid, quantity: 1 }}})
       } catch {
-        throw new Error('500', { cause: 'Error al leer base de datosB' })
+        throw new Error('500', { cause: 'Error al leer base de datos' })
       }
     }
   }
