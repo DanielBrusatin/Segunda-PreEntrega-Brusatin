@@ -2,6 +2,19 @@ import Products from './models/product.model.js'
 
 class ProductsDao {
 
+  //Funcion para validar el ID
+  static async validateId(id) {
+    // Compruebo que el ID sea válido (El ID de mongo tiene siempre 24 caracteres)
+    if (id.length == 24) {
+      //Compruebo que exista el producto con ese ID
+      if (!await Products.findById(id)) {
+        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
+      }
+    } else {
+      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido.` })
+    }
+  }
+
   static async getProducts() {
     try {
       return await Products.find()
@@ -11,6 +24,7 @@ class ProductsDao {
   }
 
   static async getProductsWithLimit(limit) {
+    //Verifico que el limite sea un numero entero y mayor que cero
     if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
       try {
         return await Products.find().limit(limit)
@@ -23,16 +37,11 @@ class ProductsDao {
   }
 
   static async getProductById(id) {
-    // Compruebo que el ID sea válido (El ID de mongo tiene siempre 24 caracteres)
-    if (id.length != 24) {
-      throw new Error('400', { cause: `El ID = ${id} es invalido` })
-    }
-    //Compruebo que exista el producto con ese ID
-    const product = await Products.findById(id)
-    if (product) {
-      return product
-    } else {
-      throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
+    await this.validateId(id)
+    try {
+      return await Products.findById(id)
+    } catch {
+      throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }
 
@@ -65,44 +74,22 @@ class ProductsDao {
   }
 
   static async updateProduct(id, newProduct) {
-    //Verifico que se haya pasado un ID válido (El ID de mongo tiene siempre 24 caracteres)
-    if (id.length == 24) {
-      //Compruebo que exista el producto con ese ID
-      if (await Products.findById(id)) {
-        //Actualizo las keys pasadas en "newProduct" que tenga el producto
-        try {
-          await Products.findByIdAndUpdate(id, newProduct)
-        } catch {
-          throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
-        }
-      } else {
-        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
-      }
-    } else {
-      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido.` })
+    await this.validateId(id)
+    try {
+      await Products.findByIdAndUpdate(id, newProduct)
+    } catch {
+      throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
     }
   }
 
-
+  static async deleteProduct(id) {
+    await this.validateId(id)
+    try {
+      await Products.findByIdAndDelete(id)
+    } catch {
+      throw new Error('500', { cause: 'No se pudo eliminar el producto, intentar nuevamente.' })
+    }
+  }
 }
 
 export default ProductsDao
-
-// deleteProduct = async (id) => {
-//   //Verifico que se haya pasado un ID válido
-//   if (Number.isInteger(Number(id)) && Number(id) > 0) {
-//     //Compruebo que exista el producto con ese ID
-//     if (this.products.find(product => product.id == id)) {
-//       this.products = this.products.filter(product => product.id != id)
-//       try {
-//         await fs.promises.writeFile(this.path, JSON.stringify(this.products))
-//       } catch {
-//         throw new Error('500', { cause: 'No se pudo eliminar el producto, intentar nuevamente.' })
-//       }
-//     } else {
-//       throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
-//     }
-//   } else {
-//     throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
-//   }
-// }

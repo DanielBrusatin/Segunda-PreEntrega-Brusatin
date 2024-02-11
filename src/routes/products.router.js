@@ -1,5 +1,4 @@
 import express from 'express'
-import productManager from '../daos/fileSystem/productManager.js'
 import ProductsDao from '../daos/Mongo/products.dao.js'
 const router = express.Router()
 
@@ -47,7 +46,7 @@ router.put('/:pid', async(req, res) => {
 
 router.delete('/:pid', async(req, res) => {
   try {
-    await productManager.deleteProduct(req.params.pid)
+    await ProductsDao.deleteProduct(req.params.pid)
     res.status(204).send()
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
