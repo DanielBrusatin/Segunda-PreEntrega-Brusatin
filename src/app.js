@@ -6,7 +6,7 @@ import cartsRouter from './routes/carts.router.js'
 import viewsRouter from './routes/views.router.js'
 import usersRouter from "./routes/users.router.js";
 import { Server } from 'socket.io'
-import productManager from './daos/fileSystem/productManager.js'
+import ProductsDao from './daos/Mongo/products.dao.js'
 import mongoose from 'mongoose'
 
 //Inicializo app y creo los servidores http y socket
@@ -38,21 +38,21 @@ app.use('/api/carts', cartsRouter)
 app.use('/', viewsRouter)
 
 //Escucho evento de nueva conexión
-io.on('connection', socket => {
+io.on('connection', async socket => {
   console.log('nuevo cliente conectado')
   //Escucho evento para agregar producto 
   socket.on('add_product', async producto => {
     try {
       //Si se agrega el producto se envía evento de confirmación
-      await productManager.addProduct(producto)
+      await ProductsDao.addProduct(producto)
       socket.emit('success')
       //Envío evento a todos los sockets para actualizar la vista de productos
-      io.emit('products', productManager.getProducts())
+      io.emit('products', await ProductsDao.getProducts())
     } catch {
       //Si hay un fallo al agregar el producto se envía evento de error 
       socket.emit('error')
     }
   })
   //Envio evento para renderizar la lista de productos a la nueva conexion
-  socket.emit('products', productManager.getProducts())
+  socket.emit('products', await ProductsDao.getProducts())
 })

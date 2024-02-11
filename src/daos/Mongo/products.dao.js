@@ -17,7 +17,7 @@ class ProductsDao {
 
   static async getProducts() {
     try {
-      return await Products.find()
+      return await Products.find().lean()
     } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
@@ -27,7 +27,7 @@ class ProductsDao {
     //Verifico que el limite sea un numero entero y mayor que cero
     if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
       try {
-        return await Products.find().limit(limit)
+        return await Products.find().limit(limit).lean()
       } catch {
         throw new Error('500', { cause: 'Error al leer base de datos' })
       }
@@ -39,7 +39,7 @@ class ProductsDao {
   static async getProductById(pid) {
     await this.validateId(pid)
     try {
-      return await Products.findById(pid)
+      return await Products.findById(pid).lean()
     } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
@@ -67,7 +67,7 @@ class ProductsDao {
     } else {
       try {
         await new Products({ ...newProduct, thumbnails }).save()
-      } catch (error) {
+      } catch {
         throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
       }
     }
