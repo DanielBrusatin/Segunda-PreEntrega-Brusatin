@@ -7,6 +7,7 @@ import viewsRouter from './routes/views.router.js'
 import usersRouter from "./routes/users.router.js";
 import { Server } from 'socket.io'
 import ProductsDao from './daos/Mongo/products.dao.js'
+import MessagesDao from "./daos/Mongo/messages.dao.js";
 import mongoose from 'mongoose'
 
 //Inicializo app y creo los servidores http y socket
@@ -55,4 +56,14 @@ io.on('connection', async socket => {
   })
   //Envio evento para renderizar la lista de productos a la nueva conexion
   socket.emit('products', await ProductsDao.getProducts())
+
+  //Escucho evento de nuevo mensaje
+  socket.on('message', async message => {
+    //Guardo mensaje en la base de datos
+    await MessagesDao.addMessage(message)
+    //Envío evento a todos los sockets para actualizar el chat
+    io.emit('messages', await MessagesDao.getMessages())
+  })
+  //Envio evento para renderizar el historial del chat a la nueva conexion
+  socket.emit('messages', await MessagesDao.getMessages())
 })

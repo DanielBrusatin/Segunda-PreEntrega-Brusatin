@@ -2,6 +2,7 @@ import express from 'express'
 import ProductsDao from '../daos/Mongo/products.dao.js'
 const router = express.Router()
 
+//Obtener productos con y sin limite
 router.get('/', async(req, res) => {
   try {
     const { limit } = req.query
@@ -17,6 +18,7 @@ router.get('/', async(req, res) => {
   }
 })
 
+//Obtener un producto por su ID
 router.get('/:pid', async(req, res) => {
   try {
     const product = await ProductsDao.getProductById(req.params.pid)
@@ -26,6 +28,7 @@ router.get('/:pid', async(req, res) => {
   }
 })
 
+//Agregar un producto
 router.post('/', async(req, res) => {
   try {
     await ProductsDao.addProduct(req.body)
@@ -35,6 +38,7 @@ router.post('/', async(req, res) => {
   }
 })
 
+//Modificar un producto
 router.put('/:pid', async(req, res) => {
   try {
     await ProductsDao.updateProduct(req.params.pid, req.body)
@@ -44,6 +48,7 @@ router.put('/:pid', async(req, res) => {
   }
 })
 
+//Eliminar un producto
 router.delete('/:pid', async(req, res) => {
   try {
     await ProductsDao.deleteProduct(req.params.pid)

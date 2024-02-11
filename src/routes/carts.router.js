@@ -2,6 +2,7 @@ import express from 'express'
 import CartsDao from '../daos/Mongo/carts.dao.js'
 const router = express.Router()
 
+//Crear carrito
 router.post('/', async(req, res) => {
   try {
     await CartsDao.createCart()
@@ -11,6 +12,7 @@ router.post('/', async(req, res) => {
   }
 })
 
+//Obtener productos de un carrito
 router.get('/:cid', async(req, res) => {
   try {
     const cart = await CartsDao.getCartById(req.params.cid) 
@@ -20,6 +22,7 @@ router.get('/:cid', async(req, res) => {
   }
 })
 
+//Agregar un producto al carrito
 router.post('/:cid/product/:pid', async(req, res) => {
   try {
     await CartsDao.addProductToCart(req.params)

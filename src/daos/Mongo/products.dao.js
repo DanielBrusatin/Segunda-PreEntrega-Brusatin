@@ -78,7 +78,7 @@ class ProductsDao {
     try {
       await Products.findByIdAndUpdate(pid, newProduct)
     } catch {
-      throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
+      throw new Error('500', { cause: 'Error al leer base de datos.' })
     }
   }
 
