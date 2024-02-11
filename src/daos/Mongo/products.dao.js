@@ -53,14 +53,33 @@ class ProductsDao {
       throw new Error('400', { cause: `Falta/n el/los campo/s ${missingFields.join(', ')}` })
     }
     //Verifico que no se repita el codigo de producto
-    if (await Products.findOne({code: code})) {
+    if (await Products.findOne({ code: code })) {
       throw new Error('400', { cause: `Ya existe un producto con el código ${code}` })
     } else {
       try {
-        await new Products({...newProduct, thumbnails}).save()
-      } catch (error){
+        await new Products({ ...newProduct, thumbnails }).save()
+      } catch (error) {
         throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
       }
+    }
+  }
+
+  static async updateProduct(id, newProduct) {
+    //Verifico que se haya pasado un ID válido (El ID de mongo tiene siempre 24 caracteres)
+    if (id.length == 24) {
+      //Compruebo que exista el producto con ese ID
+      if (await Products.findById(id)) {
+        //Actualizo las keys pasadas en "newProduct" que tenga el producto
+        try {
+          await Products.findByIdAndUpdate(id, newProduct)
+        } catch {
+          throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
+        }
+      } else {
+        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
+      }
+    } else {
+      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido.` })
     }
   }
 
@@ -68,33 +87,6 @@ class ProductsDao {
 }
 
 export default ProductsDao
-
-
-
-// updateProduct = async (id, newProduct) => {
-//   //Verifico que se haya pasado un ID válido
-//   if (Number.isInteger(Number(id)) && Number(id) > 0) {
-//     const index = this.products.findIndex(product => product.id == id)
-//     //Compruebo que exista el producto con ese ID
-//     if (index !== -1) {
-//       //Actualizo las keys pasadas en "newProduct" que tenga el producto excepto el ID
-//       for (const key in newProduct) {
-//         if (this.products[index].hasOwnProperty(key) && key != 'id') {
-//           this.products[index][key] = newProduct[key];
-//         }
-//       }
-//       try {
-//         await fs.promises.writeFile(this.path, JSON.stringify(this.products))
-//       } catch {
-//         throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
-//       }
-//     } else {
-//       throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
-//     }
-//   } else {
-//     throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido. El ID debe ser un numero entero mayor 0.` })
-//   }
-// }
 
 // deleteProduct = async (id) => {
 //   //Verifico que se haya pasado un ID válido

@@ -38,7 +38,7 @@ router.post('/', async(req, res) => {
 
 router.put('/:pid', async(req, res) => {
   try {
-    await productManager.updateProduct(req.params.pid, req.body)
+    await ProductsDao.updateProduct(req.params.pid, req.body)
     res.status(200).send({ status: 'success', message: 'Producto actualizado correctamente' })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
