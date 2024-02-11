@@ -3,15 +3,15 @@ import Products from './models/product.model.js'
 class ProductsDao {
 
   //Funcion para validar el ID
-  static async validateId(id) {
+  static async validateId(pid) {
     // Compruebo que el ID sea válido (El ID de mongo tiene siempre 24 caracteres)
-    if (id.length == 24) {
+    if (pid.length == 24) {
       //Compruebo que exista el producto con ese ID
-      if (!await Products.findById(id)) {
-        throw new Error('404', { cause: `No existe el producto con ID = ${id}` })
+      if (!await Products.findById(pid)) {
+        throw new Error('404', { cause: `No existe el producto con ID = ${pid}` })
       }
     } else {
-      throw new Error('400', { cause: `Ingresaste el ID '${id}' que es inválido.` })
+      throw new Error('400', { cause: `Ingresaste el ID de producto '${pid}' que es inválido.` })
     }
   }
 
@@ -36,10 +36,10 @@ class ProductsDao {
     }
   }
 
-  static async getProductById(id) {
-    await this.validateId(id)
+  static async getProductById(pid) {
+    await this.validateId(pid)
     try {
-      return await Products.findById(id)
+      return await Products.findById(pid)
     } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
@@ -73,19 +73,19 @@ class ProductsDao {
     }
   }
 
-  static async updateProduct(id, newProduct) {
-    await this.validateId(id)
+  static async updateProduct(pid, newProduct) {
+    await this.validateId(pid)
     try {
-      await Products.findByIdAndUpdate(id, newProduct)
+      await Products.findByIdAndUpdate(pid, newProduct)
     } catch {
       throw new Error('500', { cause: 'No se pudo agregar el producto, intentar nuevamente.' })
     }
   }
 
-  static async deleteProduct(id) {
-    await this.validateId(id)
+  static async deleteProduct(pid) {
+    await this.validateId(pid)
     try {
-      await Products.findByIdAndDelete(id)
+      await Products.findByIdAndDelete(pid)
     } catch {
       throw new Error('500', { cause: 'No se pudo eliminar el producto, intentar nuevamente.' })
     }

@@ -1,19 +1,19 @@
 import express from 'express'
-import cartManager from '../daos/fileSystem/cartManager.js'
+import CartsDao from '../daos/Mongo/carts.dao.js'
 const router = express.Router()
 
 router.post('/', async(req, res) => {
   try {
-    await cartManager.createCart()
+    await CartsDao.createCart()
     res.status(201).send({ status: 'success', message: 'Carrito creado correctamente' })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
   }
 })
 
-router.get('/:cid', (req, res) => {
+router.get('/:cid', async(req, res) => {
   try {
-    const cart = cartManager.getCartById(req.params.cid) 
+    const cart = await CartsDao.getCartById(req.params.cid) 
     res.status(200).send({ status: 'success', payload: cart })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
@@ -22,7 +22,7 @@ router.get('/:cid', (req, res) => {
 
 router.post('/:cid/product/:pid', async(req, res) => {
   try {
-    await cartManager.addProductToCart(req.params)
+    await CartsDao.addProductToCart(req.params)
     res.status(201).send({ status: 'success', message: 'Producto agregado al carrito correctamente' })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
