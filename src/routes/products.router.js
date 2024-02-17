@@ -7,14 +7,8 @@ const router = express.Router()
 //Obtener productos con y sin limite
 router.get('/', async (req, res) => {
   try {
-    const { limit } = req.query
-    if (!limit) {
-      const products = await ProductsDao.getProducts()
-      res.status(200).send({ status: 'success', payload: products })
-    } else {
-      const products = await ProductsDao.getProductsWithLimit(limit)
-      res.status(200).send({ status: 'success', payload: products })
-    }
+    const response = await ProductsDao.getProducts(req.query)
+    res.status(200).send(response)
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
   }

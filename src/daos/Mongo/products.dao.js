@@ -15,26 +15,55 @@ class ProductsDao {
     }
   }
 
-  static async getProducts() {
+  static async getProducts({limit, page, sort, category, stock}) {
+    //Armo las query, si existen, de filtro por categoria y por stock
+    const filter = {}
+    if(category) filter.category = category
+    if(stock == "true") filter.stock = {$gt: 0}
+    //Si no se pasa un limite o una pagina le coloco los valores por default
+    if(!parseInt(limit)) limit = 10
+    if(!parseInt(page)) page = 1
+    //Armo el ordenamiento, si existe, por precio ascendente o descendente
+    const order =  sort == 'asc' || sort == 'desc' ? {price: sort} : {}
+
     try {
-      return await Products.find().lean()
-    } catch {
+      const response = await Products.paginate(filter, {limit: limit, page: page, sort: order, lean: true})
+      return {
+        status: 'success',
+        payload: response.docs,
+        totalPages: response.totalPages,
+        prevPage: response.prevPage,
+        nextPage: response.nextPage,
+        page: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
+        prevLink: response.hasPrevPage ? `http://localhost:8080/api/products?limit=${limit}&page=${response.prevPage}&category=${category}&stock=${stock}&sort=${sort}`: null,
+        nextLink: response.hasNextPage ? `http://localhost:8080/api/products?limit=${limit}&page=${response.nextPage}&category=${category}&stock=${stock}&sort=${sort}`: null,
+        isValid: !(page > response.totalPages)
+      }
+    } catch (error) {
+      console.log(error);
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }
 
-  static async getProductsWithLimit(limit) {
-    //Verifico que el limite sea un numero entero y mayor que cero
-    if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
-      try {
-        return await Products.find().limit(limit).lean()
-      } catch {
-        throw new Error('500', { cause: 'Error al leer base de datos' })
-      }
-    } else {
-      throw new Error('400', { cause: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
-    }
-  }
+  // static async getProductsWithLimit(limit) {
+  //   if (parseInt(limit)) {
+  //     console.log('ok');
+  //   } else {
+  //     console.log('no ok');
+  //   }
+  //   //Verifico que el limite sea un numero entero y mayor que cero
+  //   if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
+  //     try {
+  //       return await Products.find().limit(limit).lean()
+  //     } catch {
+  //       throw new Error('500', { cause: 'Error al leer base de datos' })
+  //     }
+  //   } else {
+  //     throw new Error('400', { cause: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
+  //   }
+  // }
 
   static async getProductById(pid) {
     await this.validateId(pid)
