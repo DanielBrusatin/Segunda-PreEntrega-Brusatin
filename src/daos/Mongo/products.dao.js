@@ -27,7 +27,7 @@ class ProductsDao {
     const order =  sort == 'asc' || sort == 'desc' ? {price: sort} : {}
 
     try {
-      const response = await Products.paginate(filter, {limit: limit, page: page, sort: order, lean: true})
+      const response = await Products.paginate(filter, {limit, page, sort: order, lean: true})
       return {
         status: 'success',
         payload: response.docs,

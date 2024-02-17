@@ -32,4 +32,44 @@ router.post('/:cid/product/:pid', async(req, res) => {
   }
 })
 
+//Eliminar un producto del carrito
+router.delete('/:cid/product/:pid', async(req, res) => {
+  try {
+    await CartsDao.deleteProductFromCart(req.params)
+    res.status(200).send({ status: 'success', message: 'Producto eliminado del carrito correctamente' })
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+})
+
+//Actualizar carrito
+router.put('/:cid', async(req, res) => {
+  try {
+    await CartsDao.updateCart(req.params.cid, req.body.products)
+    res.status(201).send({ status: 'success', message: 'Carrito actualizado correctamente' })
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+})
+
+//Actualizar cantidad de producto en carrito
+router.put('/:cid/product/:pid', async(req, res) => {
+  try {
+    await CartsDao.updateQuantity(req.params, req.body.quantity)
+    res.status(201).send({ status: 'success', message: 'Cantidad actualizada correctamente' })
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+})  
+
+//Vaciar carrito
+router.delete('/:cid', async(req, res) =>{
+  try {
+    await CartsDao.clearCart(req.params.cid)
+    res.status(200).send({ status: 'success', message: 'Carrito vaciado correctamente' })
+  } catch (error) {
+    res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
+  }
+})
+
 export default router

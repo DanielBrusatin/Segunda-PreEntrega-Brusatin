@@ -16,6 +16,7 @@ class CartsDao {
     }
   }
 
+  //Crear carrito
   static async createCart() {
     try {
       await new Carts().save()
@@ -24,15 +25,17 @@ class CartsDao {
     }
   }
 
+  //Obtener productos del carrito
   static async getCartById(cid) {
     await this.validateId(cid)
     try {
-      return (await Carts.findById(cid)).products
+      return (await Carts.findById(cid))
     } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }
 
+  //Agregar producto al carrito
   static async addProductToCart({ cid, pid }) {
     await this.validateId(cid)
     //Compruebo que el ID de producto sea valido y que exista el producto con ese PID
@@ -42,21 +45,91 @@ class CartsDao {
       throw new Error(error.message, { cause: error.cause })
     }
     //Compruebo si ya existe el producto en el carrito para agregarlo o sumarle uno a la cantidad
-    const productsInCart = (await Carts.findById(cid)).products 
+    const productsInCart = (await Carts.findById(cid)).products
     const productIndex = productsInCart.findIndex(cartItem => cartItem._id == pid)
     if (productIndex !== -1) {
       try {
-        await Carts.findByIdAndUpdate(cid, {$inc: {'products.$[elem].quantity': 1}}, { arrayFilters: [{ 'elem._id': pid }] })
+        await Carts.findByIdAndUpdate(cid, { $inc: { 'products.$[elem].quantity': 1 } }, { arrayFilters: [{ 'elem._id': pid }] })
       } catch {
         throw new Error('500', { cause: 'Error al leer base de datos' })
       }
     } else {
       try {
-        await Carts.findByIdAndUpdate(cid, {$push: {'products': { _id: pid, quantity: 1 }}})
+        await Carts.findByIdAndUpdate(cid, { $push: { 'products': { _id: pid, quantity: 1 } } })
       } catch {
         throw new Error('500', { cause: 'Error al leer base de datos' })
       }
     }
+  }
+
+  //Eliminar producto del carrito
+  static async deleteProductFromCart({ cid, pid }) {
+    await this.validateId(cid)
+    //Compruebo que el ID de producto sea valido y que exista el producto con ese PID
+    try {
+      await ProductsDao.getProductById(pid)
+    } catch (error) {
+      throw new Error(error.message, { cause: error.cause })
+    }
+    //Compruebo si existe el producto en el carrito para eliminarlo
+    const productsInCart = (await Carts.findById(cid)).products
+    const productIndex = productsInCart.findIndex(cartItem => cartItem._id == pid)
+    if (productIndex !== -1) {
+      try {
+        await Carts.findByIdAndUpdate(cid, { $pull: { products: { _id: pid } } })
+      } catch {
+        throw new Error('500', { cause: 'Error al leer base de datos' })
+      }
+    } else {
+      throw new Error('400', { cause: 'No existe el producto en el carrito' })
+    }
+  }
+
+  //Actualizar carrito
+  static async updateCart(cid, products) {
+    await this.validateId(cid)
+    try {
+      await Carts.findByIdAndUpdate(cid, { 'products': products })
+    } catch {
+      throw new Error('500', { cause: 'Error al leer base de datos' })
+    }
+  }
+
+  //Actualizar cantidad de producto
+  static async updateQuantity({ cid, pid }, quantity) {
+    //Valido el cart ID y que la cantidad sea un numero
+    await this.validateId(cid)
+    if (!Number.isInteger(Number(quantity))) throw new Error('404', { cause: 'La cantidad debe ser un numero entero' })
+    //Compruebo que el ID de producto sea valido y que exista el producto con ese PID
+    try {
+      await ProductsDao.getProductById(pid)
+    } catch (error) {
+      throw new Error(error.message, { cause: error.cause })
+    }
+    //Compruebo si ya existe el producto en el carrito para modificar la cantidad
+    const productsInCart = (await Carts.findById(cid)).products
+    const productIndex = productsInCart.findIndex(cartItem => cartItem._id == pid)
+    if (productIndex !== -1) {
+      try {
+        await Carts.findByIdAndUpdate(cid, { 'products.$[elem].quantity': quantity }, { arrayFilters: [{ 'elem._id': pid }] })
+      } catch {
+        throw new Error('500', { cause: 'Error al leer base de datos' })
+      }
+    } else {
+      throw new Error('400', { cause: 'No existe el producto en el carrito' })
+    }
+  }
+
+  //Vaciar carrito
+  static async clearCart(cid) {
+    //Valido el cart ID
+    await this.validateId(cid)
+      try {
+        await Carts.findByIdAndUpdate(cid, { 'products': [] })
+      } catch {
+        throw new Error('500', { cause: 'Error al leer base de datos' })
+      }
+
   }
 }
 
