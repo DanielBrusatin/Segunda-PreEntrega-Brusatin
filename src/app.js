@@ -40,20 +40,7 @@ app.use('/', viewsRouter)
 
 //Escucho evento de nueva conexión
 io.on('connection', async socket => {
-  console.log('nuevo cliente conectado')
-  //Escucho evento para agregar producto 
-  socket.on('add_product', async producto => {
-    try {
-      //Si se agrega el producto se envía evento de confirmación
-      await ProductsDao.addProduct(producto)
-      socket.emit('success')
-      //Envío evento a todos los sockets para actualizar la vista de productos
-      io.emit('products', await ProductsDao.getProducts())
-    } catch {
-      //Si hay un fallo al agregar el producto se envía evento de error 
-      socket.emit('error')
-    }
-  })
+  console.log('nuevo cliente conectado') 
   //Envio evento para renderizar la lista de productos a la nueva conexion
   socket.emit('products', await ProductsDao.getProducts())
 
@@ -67,3 +54,4 @@ io.on('connection', async socket => {
   //Envio evento para renderizar el historial del chat a la nueva conexion
   socket.emit('messages', await MessagesDao.getMessages())
 })
+export default io

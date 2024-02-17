@@ -5,13 +5,12 @@ const router = express.Router()
 //Mostrar lista de productos
 router.get('/', async (req, res) => {
   const products = await ProductsDao.getProducts()
-  console.log(products);
   res.render('home', {products})
 })
 
 //Mostrar en tiempo real los productos
 router.get('/realtimeproducts', (req, res) => {
-  res.render('realTimeProducts')
+  res.render('realTimeProducts', {status: req.query.status, error: req.query.error})
 })
 
 //Chat con websocket

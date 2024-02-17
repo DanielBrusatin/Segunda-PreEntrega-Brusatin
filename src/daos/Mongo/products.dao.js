@@ -59,7 +59,7 @@ class ProductsDao {
     const missingFields = []
     Object.entries(newProduct).forEach(([key, value]) => !value && missingFields.push(key))
     if (missingFields.length) {
-      throw new Error('400', { cause: `Falta/n el/los campo/s ${missingFields.join(', ')}` })
+      throw new Error('400', { cause: missingFields.length == 1 ? `Falta el campo ${missingFields.join(', ')}`: `Faltan los campos ${missingFields.join(', ')}`})
     }
     //Verifico que no se repita el codigo de producto
     if (await Products.findOne({ code: code })) {

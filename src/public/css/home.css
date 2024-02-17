@@ -21,3 +21,8 @@ form input {
     border-style: inset;
     border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
 }
+.card-img {
+    padding: 1rem 1rem 0;
+    height: 180px;
+    object-fit: contain;
+}

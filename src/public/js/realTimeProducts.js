@@ -1,23 +1,6 @@
 const socket = io()
-const products = [{ stock: 0 }, { stock: 1 }]
 const form = document.getElementById('addProduct')
 const catalogue = document.getElementById('catalogue')
-
-//Capturo campos del formulario, envío evento para agregar producto y borro contenido de los campos del formulario
-form.addEventListener('submit', ev => {
-  ev.preventDefault()
-  const newProduct = {
-    title: ev.target.title.value,
-    description: ev.target.description.value,
-    code: ev.target.code.value,
-    price: ev.target.price.value,
-    status: ev.target.status.value,
-    stock: ev.target.stock.value,
-    category: ev.target.category.value 
-  }
-  socket.emit('add_product', newProduct)
-  form.reset()
-})
 
 //Escucho evento para renderizar lista de productos
 socket.on('products', products => {
@@ -27,6 +10,7 @@ socket.on('products', products => {
   products.forEach(product => {
     const content = `<div class="text-center card" style="width: 16rem; margin: 10px">
     <div class="card-header">Categoría: ${product.category}</div>
+    <img class="card-img-top card-img" src='/images/products/${product.thumbnails[0]}'/>
     <div class="card-body">
       <div class="card-title h5">${product.title}</div>
       <div class="mb-2 text-muted card-subtitle h6">Precio: $${product.price}</div>
@@ -36,22 +20,4 @@ socket.on('products', products => {
   </div>`
     catalogue.innerHTML += content
   })
-})
-
-//Escucho evento de confirmacion de producto agregado
-socket.on('success', () => {
-  Swal.fire({
-    title: "Agregado!",
-    text: "Se agrego correctamente el producto",
-    icon: 'success'
-  });
-})
-
-//Escucho evento de error al agregar producto
-socket.on('error', () => {
-  Swal.fire({
-    title: 'Ups!',
-    text: "Ya existe un producto con ese código",
-    icon: 'error'
-  });
 })
