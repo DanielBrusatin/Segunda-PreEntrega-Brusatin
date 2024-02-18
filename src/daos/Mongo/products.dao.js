@@ -28,6 +28,9 @@ class ProductsDao {
 
     try {
       const response = await Products.paginate(filter, {limit, page, sort: order, lean: true})
+      const queryCategory = category ? `&category=${category}` : ''
+      const queryStock = stock ? `&stock=${stock}` : ''
+      const querySort = sort ? `&sort=${sort}` : ''
       return {
         status: 'success',
         payload: response.docs,
@@ -37,8 +40,8 @@ class ProductsDao {
         page: response.page,
         hasPrevPage: response.hasPrevPage,
         hasNextPage: response.hasNextPage,
-        prevLink: response.hasPrevPage ? `http://localhost:8080/api/products?limit=${limit}&page=${response.prevPage}&category=${category}&stock=${stock}&sort=${sort}`: null,
-        nextLink: response.hasNextPage ? `http://localhost:8080/api/products?limit=${limit}&page=${response.nextPage}&category=${category}&stock=${stock}&sort=${sort}`: null,
+        prevLink: response.hasPrevPage ? `/products?limit=${limit}&page=${response.prevPage}${queryCategory}${queryStock}${querySort}`: null,
+        nextLink: response.hasNextPage ? `/products?limit=${limit}&page=${response.nextPage}${queryCategory}${queryStock}${querySort}`: null,
         isValid: !(page > response.totalPages)
       }
     } catch (error) {
@@ -46,24 +49,6 @@ class ProductsDao {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }
-
-  // static async getProductsWithLimit(limit) {
-  //   if (parseInt(limit)) {
-  //     console.log('ok');
-  //   } else {
-  //     console.log('no ok');
-  //   }
-  //   //Verifico que el limite sea un numero entero y mayor que cero
-  //   if (Number.isInteger(Number(limit)) && Number(limit) > 0) {
-  //     try {
-  //       return await Products.find().limit(limit).lean()
-  //     } catch {
-  //       throw new Error('500', { cause: 'Error al leer base de datos' })
-  //     }
-  //   } else {
-  //     throw new Error('400', { cause: `Ingresaste el límite '${limit}' que es inválido. El límite debe ser un numero entero mayor que 0.` })
-  //   }
-  // }
 
   static async getProductById(pid) {
     await this.validateId(pid)

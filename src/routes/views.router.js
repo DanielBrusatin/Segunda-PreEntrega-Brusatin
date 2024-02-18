@@ -1,11 +1,15 @@
 import express from "express"
-import ProductsDao from "../daos/Mongo/products.dao.js"
+import axios from "axios";
+axios.defaults.baseURL = 'http://localhost:8080';
 const router = express.Router()
 
 //Mostrar lista de productos
-router.get('/', async (req, res) => {
-  const products = await ProductsDao.getProducts()
-  res.render('home', {products})
+router.get('/products', async (req, res) => {
+  axios.get('/api/products', {
+    params: req.query
+  })
+  .then(response => res.render('products', response.data))
+  .catch(error => console.log(error))
 })
 
 //Mostrar en tiempo real los productos
