@@ -29,9 +29,8 @@ class CartsDao {
   static async getCartById(cid) {
     await this.validateId(cid)
     try {
-      return (await Carts.findById(cid)).populate('products.product')
-    } catch (error) {
-      console.log(error);
+      return (await Carts.findById(cid).lean().populate('products.product'))
+    } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }

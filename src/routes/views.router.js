@@ -12,6 +12,12 @@ router.get('/products', async (req, res) => {
   .catch(error => console.log(error))
 })
 
+router.get('/carts/:cid', async (req, res) => {
+  axios.get(`/api/carts/${req.params.cid}`)
+  .then(response => res.render('cart', response.data.payload))
+  .catch(error => console.log(error))
+})
+
 //Mostrar en tiempo real los productos
 router.get('/realtimeproducts', (req, res) => {
   res.render('realTimeProducts', {status: req.query.status, error: req.query.error})

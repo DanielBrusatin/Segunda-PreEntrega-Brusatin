@@ -44,8 +44,7 @@ class ProductsDao {
         nextLink: response.hasNextPage ? `/products?limit=${limit}&page=${response.nextPage}${queryCategory}${queryStock}${querySort}`: null,
         isValid: !(page > response.totalPages)
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new Error('500', { cause: 'Error al leer base de datos' })
     }
   }

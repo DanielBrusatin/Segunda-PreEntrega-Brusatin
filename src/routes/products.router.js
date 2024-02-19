@@ -50,7 +50,7 @@ router.put('/:pid', async (req, res) => {
 router.delete('/:pid', async (req, res) => {
   try {
     await ProductsDao.deleteProduct(req.params.pid)
-    res.status(204).send()
+    res.status(200).send({ status: 'success', message: 'Producto eliminado correctamente' })
   } catch (error) {
     res.status(error.message).send({ status: `error ${error.message}`, error: error.cause })
   }
