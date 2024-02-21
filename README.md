@@ -16,5 +16,14 @@
     * Metodo GET en '/:cid' : Muestra los productos de un carrito verificando que exista un carrito con ese ID. Si bien el carrito solo guarda el ID de los productos, se muestran todas las propiedades del producto mas la cantidad del mismo.
     * Metodo POST en '/:cid/product/:pid' : Agrega un producto a un carrito verificando que existan ambos ID, si el producto ya esta en el carrito se le suma 1 a la cantidad.
 * - [x] Desafío 4: Integración al servidor de vistas usando handlebars y sockets con websockets.
-* - [ ] Primera práctica integradora: Cambio de persistencia en archivos a persistencia en base de datos usando mongoose e implementación de chat.
-
+* - [x] Primera práctica integradora: Cambio de persistencia en archivos a persistencia en base de datos usando mongoose e implementación de chat.
+* - [ ] Segunda preentrega: Modificacion de endpoints para agregar filtros, páginación y ordenamientos. Vistas de productos y carrito.
+  * Router de productos en **/api/products**:
+    * Metodo GET en '/' : Muestra los productos con las querys de limit, page, sort, category y stock.
+  * Router de carritos en **/api/carts**:
+    * Metodo GET en '/:cid' : Muestra los productos de un carrito verificando que exista un carrito con ese ID. Si bien el carrito solo guarda el ID de los productos, se muestran todas las propiedades del producto mas la cantidad del mismo; esto se logra usando POPULATE.
+    * Metodo DELETE en '/:cid/products/:pid' : Elimina el producto seleccionado del carrito.
+    * Metodo PUT en '/:cid/products/:pid' : Actualiza solo la cantidad pasada en el body.
+    * Metodo DELETE en '/:cid' : Elimina todos los productos del carrito.
+  * Vista de productos en **/products**: Vista de productos con paginación, opciones de filtro y botón en cada producto para agregar al carrito.
+  * Vista de carrito en **/carts/:cid**: Vista de carrito con los productos agregados, con botones para eliminar cada producto y uno para vaciar el carrito. Para esta entrega se uso el **cid: 65d120e48d47167429465f50** hardcodeado para agregar los productos y para mostrar el carrito.

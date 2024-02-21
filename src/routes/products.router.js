@@ -4,7 +4,7 @@ import ProductsDao from '../daos/Mongo/products.dao.js'
 import io from '../app.js';
 const router = express.Router()
 
-//Obtener productos con y sin limite
+//Obtener productos con querys
 router.get('/', async (req, res) => {
   try {
     const response = await ProductsDao.getProducts(req.query)
