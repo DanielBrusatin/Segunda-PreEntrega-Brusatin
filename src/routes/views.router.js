@@ -20,7 +20,7 @@ router.get('/carts/:cid', async (req, res) => {
 
 //Mostrar en tiempo real los productos
 router.get('/realtimeproducts', (req, res) => {
-  res.render('realTimeProducts', {status: req.query.status, error: req.query.error})
+  res.render('realTimeProducts')
 })
 
 //Chat con websocket
